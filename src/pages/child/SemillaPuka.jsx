@@ -9,6 +9,58 @@ import confetti from 'canvas-confetti';
 import { AuthContext } from '../../context/AuthContext';
 import api from '../../services/api';
 
+// Función para redimensionar y comprimir fotos antes de procesarlas (evita Out of Memory / Memoria Llena en móviles)
+const compressImage = (file, maxWidth = 1000, maxHeight = 1000, quality = 0.72) => {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) {
+      return reject(new Error('El archivo seleccionado no es una imagen válida.'));
+    }
+
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Error al leer el archivo de la cámara'));
+    reader.onload = (readerEvent) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Error al decodificar la imagen'));
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          return resolve(readerEvent.target.result);
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        try {
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedDataUrl);
+        } catch (e) {
+          resolve(readerEvent.target.result);
+        }
+      };
+      img.src = readerEvent.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 export default function SemillaPuka() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
@@ -67,16 +119,25 @@ export default function SemillaPuka() {
     }
   };
 
-  const handleFileUpload = (stage, event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = async (stage, event) => {
+    const file = event.target.files && event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64Data = reader.result;
-      await submitPhoto(stage, base64Data);
-    };
-    reader.readAsDataURL(file);
+    setUploadingStage(stage);
+    try {
+      // Comprimir foto en el navegador para evitar el error de "memoria llena"
+      const compressedBase64 = await compressImage(file, 1000, 1000, 0.72);
+      await submitPhoto(stage, compressedBase64);
+    } catch (err) {
+      console.error("Error al procesar la foto:", err);
+      setToastMessage({
+        type: 'error',
+        text: 'La foto es muy pesada para la memoria del teléfono. Prueba seleccionando otra o eligiendo desde la galería.'
+      });
+      setUploadingStage(null);
+    } finally {
+      if (event.target) event.target.value = '';
+    }
   };
 
   const submitPhoto = async (stage, photoData) => {
@@ -587,11 +648,10 @@ function StagePhotoCard({ stageKey, stageTitle, stageEmoji, stageDesc, photoUrl,
         </div>
       )}
 
-      {/* Input oculto de archivo */}
+      {/* Input oculto de archivo (sin capture="environment" forzado para evitar colapsar la RAM del teléfono) */}
       <input 
         type="file" 
         accept="image/*" 
-        capture="environment" 
         ref={fileInputRef} 
         onChange={onFileSelected} 
         className="hidden" 
