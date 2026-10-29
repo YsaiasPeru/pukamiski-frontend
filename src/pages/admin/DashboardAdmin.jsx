@@ -6,6 +6,8 @@ import {
   QrCode, Download, Printer, ExternalLink, Check, Copy
 } from 'lucide-react';
 import api from '../../services/api';
+import PukaCardsVista from './PukaCardsVista';
+import RecompensasVista from './RecompensasVista';
 
 const MetricasVista = () => {
   const [metrics, setMetrics] = useState({
@@ -559,13 +561,8 @@ export default function DashboardAdmin() {
         {activeTab === 'qr_catalog' && <QrCatalogoVista />}
         {activeTab === 'usuarios' && <UsuariosVista />}
         {activeTab === 'retos' && <RetosVista />}
-        
-        {['cartas', 'recompensas'].includes(activeTab) && (
-          <div className="h-96 flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 rounded-[3rem]">
-            <Gamepad2 className="w-16 h-16 mb-4 text-gray-300" />
-            <h2 className="text-2xl font-bold text-gray-500">Módulo en Construcción</h2>
-          </div>
-        )}
+        {activeTab === 'cartas' && <PukaCardsVista />}
+        {activeTab === 'recompensas' && <RecompensasVista />}
       </main>
 
       {isMobileMenuOpen && (
