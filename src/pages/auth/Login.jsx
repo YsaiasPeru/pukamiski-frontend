@@ -51,7 +51,7 @@ export default function Login() {
       <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-puka-gold/20 rounded-full mix-blend-multiply blur-3xl"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-puka-red/20 rounded-full mix-blend-multiply blur-3xl"></div>
 
-      <div className="bg-white/85 backdrop-blur-md p-8 rounded-[3rem] shadow-2xl w-full max-w-md border-4 border-white/50 relative z-10">
+      <div className="bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl sm:rounded-[3rem] shadow-2xl w-full max-w-md border-4 border-white/50 relative z-10">
         
         {/* Toggle Role */}
         <div className="flex bg-gray-100 rounded-2xl p-1 mb-8">

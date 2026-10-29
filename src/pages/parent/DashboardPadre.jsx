@@ -333,7 +333,7 @@ export default function DashboardPadre() {
       {/* MODAL DE ENCUESTA NUTRICIONAL INICIAL */}
       {surveyChild && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
-          <div className="bg-white rounded-[2.5rem] p-6 max-w-lg w-full shadow-2xl relative my-8 border-4 border-emerald-100 animate-slide-up">
+          <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative my-auto border-4 border-emerald-100 animate-slide-up">
             <button 
               onClick={() => {
                 setSurveyChild(null);
