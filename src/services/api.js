@@ -4,13 +4,14 @@ const isLocal = typeof window !== 'undefined' && (window.location.hostname === '
 
 let backendUrl = import.meta.env.VITE_API_URL || '';
 
-// Corrección automática: si la variable tiene 'k' (pukamiski), corregirla a 't' (pukamisti)
-if (backendUrl.includes('pukamiski-backend')) {
-  backendUrl = backendUrl.replace('pukamiski-backend', 'pukamisti-backend');
+// Si la URL viene de Render (antiguo servidor suspendido) o está vacía, apuntar a Vercel
+if (!backendUrl || backendUrl.includes('onrender.com') || !backendUrl.startsWith('http')) {
+  backendUrl = isLocal ? 'http://127.0.0.1:8000' : 'https://pukamisti-backend.vercel.app';
 }
 
-if (!backendUrl || !backendUrl.startsWith('http')) {
-  backendUrl = isLocal ? 'http://127.0.0.1:8000' : 'https://pukamisti-backend.onrender.com';
+// Corrección automática en caso de typos
+if (backendUrl.includes('pukamiski-backend.vercel.app')) {
+  backendUrl = backendUrl.replace('pukamiski-backend', 'pukamisti-backend');
 }
 
 backendUrl = backendUrl.replace(/\/+$/, '');
