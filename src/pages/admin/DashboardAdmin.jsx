@@ -3,11 +3,12 @@ import { AuthContext } from '../../context/AuthContext';
 import { 
   LayoutDashboard, Target, Gamepad2, Gift, Users, 
   LogOut, Menu, X, TrendingUp, Activity, Plus, Edit, Trash2,
-  QrCode, Download, Printer, ExternalLink, Check, Copy
+  QrCode, Download, Printer, ExternalLink, Check, Copy, Smartphone
 } from 'lucide-react';
 import api from '../../services/api';
 import PukaCardsVista from './PukaCardsVista';
 import RecompensasVista from './RecompensasVista';
+import DonacionesVista from './DonacionesVista';
 
 const MetricasVista = () => {
   const [metrics, setMetrics] = useState({
@@ -504,6 +505,7 @@ export default function DashboardAdmin() {
   const menuItems = [
     { id: 'metricas', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'qr_catalog', label: 'Catálogo de QRs', icon: QrCode },
+    { id: 'donaciones', label: 'Yape / Plin', icon: Smartphone },
     { id: 'usuarios', label: 'Usuarios', icon: Users },
     { id: 'retos', label: 'Retos Puka', icon: Target },
     { id: 'cartas', label: 'Puka Cards', icon: Gamepad2 },
@@ -559,6 +561,7 @@ export default function DashboardAdmin() {
       <main className="flex-1 p-6 md:p-12 overflow-y-auto w-full">
         {activeTab === 'metricas' && <MetricasVista />}
         {activeTab === 'qr_catalog' && <QrCatalogoVista />}
+        {activeTab === 'donaciones' && <DonacionesVista />}
         {activeTab === 'usuarios' && <UsuariosVista />}
         {activeTab === 'retos' && <RetosVista />}
         {activeTab === 'cartas' && <PukaCardsVista />}

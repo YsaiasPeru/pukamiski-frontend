@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Heart, Sparkles, QrCode, Share2, 
   CheckCircle, Users, Trophy, HandHeart, Copy, ExternalLink 
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import api from '../services/api';
 
 export default function ImpactoSocial() {
   const navigate = useNavigate();
   const [copiedYape, setCopiedYape] = useState(false);
   const [copiedPlin, setCopiedPlin] = useState(false);
+  const [paymentInfo, setPaymentInfo] = useState({
+    yape_phone: '987 654 321',
+    yape_holder: 'Proyecto Pukamisky',
+    plin_phone: '987 654 321',
+    plin_holder: 'Proyecto Pukamisky'
+  });
+
+  useEffect(() => {
+    const fetchPaymentInfo = async () => {
+      try {
+        const { data } = await api.get('/admin/settings/payments');
+        if (data && data.yape_phone) {
+          setPaymentInfo(data);
+        }
+      } catch (err) {
+        console.warn("Usando configuración predeterminada de Yape/Plin", err);
+      }
+    };
+    fetchPaymentInfo();
+  }, []);
 
   const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text);
@@ -142,13 +163,15 @@ export default function ImpactoSocial() {
                 </div>
                 <div>
                   <h4 className="font-black text-gray-800 text-sm">Aporte vía Yape</h4>
-                  <p className="text-xs font-mono text-gray-600 font-bold">987 654 321</p>
-                  <p className="text-[10px] text-gray-500 font-semibold">Titular: Proyecto Pukamisky</p>
+                  <p className="text-xs font-mono text-gray-700 font-bold">{paymentInfo.yape_phone}</p>
+                  <p className="text-[10px] text-gray-500 font-semibold truncate max-w-[180px]">
+                    Titular: {paymentInfo.yape_holder}
+                  </p>
                 </div>
               </div>
               <button 
-                onClick={() => copyToClipboard('987654321', 'yape')}
-                className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5"
+                onClick={() => copyToClipboard(paymentInfo.yape_phone.replace(/\s+/g, ''), 'yape')}
+                className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5 active:scale-95"
               >
                 {copiedYape ? <CheckCircle className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedYape ? '¡Copiado!' : 'Copiar'}</span>
@@ -163,13 +186,15 @@ export default function ImpactoSocial() {
                 </div>
                 <div>
                   <h4 className="font-black text-gray-800 text-sm">Aporte vía Plin</h4>
-                  <p className="text-xs font-mono text-gray-600 font-bold">987 654 321</p>
-                  <p className="text-[10px] text-gray-500 font-semibold">Cualquier banco afiliado</p>
+                  <p className="text-xs font-mono text-gray-700 font-bold">{paymentInfo.plin_phone}</p>
+                  <p className="text-[10px] text-gray-500 font-semibold truncate max-w-[180px]">
+                    Titular: {paymentInfo.plin_holder}
+                  </p>
                 </div>
               </div>
               <button 
-                onClick={() => copyToClipboard('987654321', 'plin')}
-                className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5"
+                onClick={() => copyToClipboard(paymentInfo.plin_phone.replace(/\s+/g, ''), 'plin')}
+                className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5 active:scale-95"
               >
                 {copiedPlin ? <CheckCircle className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedPlin ? '¡Copiado!' : 'Copiar'}</span>
